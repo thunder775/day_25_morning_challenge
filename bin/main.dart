@@ -62,6 +62,7 @@ bool sudokuValidator(List<List<int>> board) {
   int count = 0;
   for (int i = 0; i < board.length; i++) {
     for (int j = 0; j < board[i].length; j++) {
+      if(i%3==0&&j%3==0){}
       if (rowContainsElement(board, board[i][j], i, j + 1)) {
         count++;
         print('row $i col $j');
