@@ -59,7 +59,12 @@ int comparator(int a, int b) {
 }
 
 bool sudokuValidator(List<List<int>> board) {
+  return colAndRowValidity(board) &&
+      !notInValidRange(board) &&
+      containsNumbers(board);
+}
 
+bool colAndRowValidity(List<List<int>> board) {
   for (int i = 0; i < board.length; i++) {
     for (int j = 0; j < board[i].length; j++) {
       if (invalidRowMove(board, i, j + 1)) {
@@ -72,19 +77,6 @@ bool sudokuValidator(List<List<int>> board) {
       }
     }
   }
-  for (int i = 0; i < board.length; i += 3) {
-    /// 3x3box check
-    for (int j = 0; j < board.length; j += 3) {
-      if (!containsNumbers(board, i, j)) {
-        return false;
-      }
-    }
-  }
-
-  if (notInValidRange(board)) {
-    return false;
-  }
-
   return true;
 }
 
@@ -93,13 +85,16 @@ bool notInValidRange(List<List<int>> board) => board
     .toList()
     .any((element) => element < 0 || element > board.length);
 
-bool containsNumbers(List<List<int>> board, int row, int col) {
-  int count = 0;
+bool containsNumbers(List<List<int>> board) {
   List numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  numbers.forEach((number) {
-    if (in3x3Matrix(board, number, row, col)) count++;
-  });
-  return count == 9;
+  for (int i = 0; i < board.length; i += 3) {
+    for (int j = 0; j < board.length; j += 3) {
+      if (numbers.any((number) => !in3x3Matrix(board, number, i, j))) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 //checks 3x3 matrix contains all digits
@@ -134,18 +129,18 @@ bool invalidRowMove(List<List<int>> board, int row, int column) {
 }
 
 main() {
-  containsNumbers([
-    [1, 2, 3],
-    [4, 5, 6, 88],
-    [07, 8, 9, 99],
-  ], 0, 0);
+//  containsNumbers([
+//    [1, 2, 3],
+//    [4, 5, 6, 88],
+//    [07, 8, 9, 99],
+//  ], 0, 0);
   in3x3Matrix([
     [1, 2, 7, 77],
     [4, 7, 6, 88],
     [07, 8, 49, 99],
   ], 7, 0, 1);
   print(sudokuValidator([
-    [1, 5,2, 4, 8, 9, 3, 7, 6],
+    [1, 5, 2, 4, 8, 9, 3, 7, 6],
     [7, 3, 9, 2, 5, 6, 8, 4, 1],
     [4, 6, 8, 3, 7, 1, 2, 9, 5],
     [3, 8, 7, 1, 2, 4, 6, 5, 9],
