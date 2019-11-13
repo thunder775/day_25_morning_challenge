@@ -59,39 +59,44 @@ int comparator(int a, int b) {
 }
 
 bool sudokuValidator(List<List<int>> board) {
-  int count = 0;
+
   for (int i = 0; i < board.length; i++) {
     for (int j = 0; j < board[i].length; j++) {
-      if(i%3==0&&j%3==0){}
-      if (rowContainsElement(board, board[i][j], i, j + 1)) {
-        count++;
-        print('row $i col $j');
-        print('row invalidation');
+      if (invalidRowMove(board, i, j + 1)) {
+        /// row check
+        return false;
       }
-      if (colContainsElement(board, board[i][j], i + 1, j)) {
-        count++;
-        print('row $i col $j');
-        print('col invalidation');
+      if (invalidColMove(board, i + 1, j)) {
+        /// col check
+        return false;
       }
     }
   }
-  if (!containsNumbers(board, 0, 0)) count++;
-  if (!containsNumbers(board, 0, 3)) count++;
-  if (!containsNumbers(board, 0, 6)) count++;
-  if (!containsNumbers(board, 3, 0)) count++;
-  if (!containsNumbers(board, 3, 3)) count++;
-  if (!containsNumbers(board, 3, 6)) count++;
-  if (!containsNumbers(board, 6, 0)) count++;
-  if (!containsNumbers(board, 6, 3)) count++;
-  if (!containsNumbers(board, 6, 6)) count++;
-  return count == 0;
+  for (int i = 0; i < board.length; i += 3) {
+    /// 3x3box check
+    for (int j = 0; j < board.length; j += 3) {
+      if (!containsNumbers(board, i, j)) {
+        return false;
+      }
+    }
+  }
+
+  if (notInValidRange(board)) {
+    return false;
+  }
+
+  return true;
 }
+
+bool notInValidRange(List<List<int>> board) => board
+    .expand((row) => row)
+    .toList()
+    .any((element) => element < 0 || element > board.length);
 
 bool containsNumbers(List<List<int>> board, int row, int col) {
   int count = 0;
   List numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   numbers.forEach((number) {
-//   print('number is $number');
     if (in3x3Matrix(board, number, row, col)) count++;
   });
   return count == 9;
@@ -102,11 +107,9 @@ bool in3x3Matrix(List<List<int>> board, int element, int row, int column) {
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
       if (board[row + i][column + j] == element) {
-//        print('${row + i} and ${column + j}');
         return true;
       }
       if (board[row + j][column + i] == element) {
-//        print('${row + j} and ${column + i}');
         return true;
       }
     }
@@ -115,19 +118,17 @@ bool in3x3Matrix(List<List<int>> board, int element, int row, int column) {
 }
 
 //checks for invalid column move
-bool colContainsElement(
-    List<List<int>> board, int element, int row, int column) {
+bool invalidColMove(List<List<int>> board, int row, int column) {
   for (int i = row; i < board.length; i++) {
-    if (element == board[i][column]) return true;
+    if (board[row - 1][column] == board[i][column]) return true;
   }
   return false;
 }
 
 //checks for invalid row move
-bool rowContainsElement(
-    List<List<int>> board, int element, int row, int column) {
+bool invalidRowMove(List<List<int>> board, int row, int column) {
   for (int i = column; i < board[row].length; i++) {
-    if (element == board[row][i]) return true;
+    if (board[row][column - 1] == board[row][i]) return true;
   }
   return false;
 }
@@ -144,7 +145,7 @@ main() {
     [07, 8, 49, 99],
   ], 7, 0, 1);
   print(sudokuValidator([
-    [1, 5, 2, 4, 8, 9, 3, 7, 6],
+    [1, 5,2, 4, 8, 9, 3, 7, 6],
     [7, 3, 9, 2, 5, 6, 8, 4, 1],
     [4, 6, 8, 3, 7, 1, 2, 9, 5],
     [3, 8, 7, 1, 2, 4, 6, 5, 9],
