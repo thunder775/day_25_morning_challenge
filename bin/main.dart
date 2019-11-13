@@ -67,12 +67,7 @@ bool sudokuValidator(List<List<int>> board) {
 bool colAndRowValidity(List<List<int>> board) {
   for (int i = 0; i < board.length; i++) {
     for (int j = 0; j < board[i].length; j++) {
-      if (invalidRowMove(board, i, j + 1)) {
-        /// row check
-        return false;
-      }
-      if (invalidColMove(board, i + 1, j)) {
-        /// col check
+      if (invalidRow(board, i, j + 1)||invalidColumn(board, i+1, j)) {
         return false;
       }
     }
@@ -113,7 +108,7 @@ bool in3x3Matrix(List<List<int>> board, int element, int row, int column) {
 }
 
 //checks for invalid column move
-bool invalidColMove(List<List<int>> board, int row, int column) {
+bool invalidColumn(List<List<int>> board, int row, int column) {
   for (int i = row; i < board.length; i++) {
     if (board[row - 1][column] == board[i][column]) return true;
   }
@@ -121,7 +116,7 @@ bool invalidColMove(List<List<int>> board, int row, int column) {
 }
 
 //checks for invalid row move
-bool invalidRowMove(List<List<int>> board, int row, int column) {
+bool invalidRow(List<List<int>> board, int row, int column) {
   for (int i = column; i < board[row].length; i++) {
     if (board[row][column - 1] == board[row][i]) return true;
   }
